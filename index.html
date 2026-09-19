@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missão: Defesa do Organismo</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #eef4f1;
+    color: #17332b;
+}
+
+.screen {
+    display: none;
+    min-height: 100vh;
+    padding: 28px;
+}
+
+.screen.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    max-width: 900px;
+    width: 100%;
+    background: white;
+    border-radius: 24px;
+    padding: 34px;
+    box-shadow: 0 12px 35px rgba(0,0,0,.12);
+}
+
+h1 {
+    font-size: 42px;
+    margin: 0 0 10px;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #557067;
+}
+
+.cover {
+    text-align: center;
+}
+
+.cover h1 {
+    color: #174d3c;
+}
+
+.info {
+    margin-top: 35px;
+    line-height: 1.8;
+    font-size: 17px;
+}
+
+.btn {
+    border: 0;
+    border-radius: 14px;
+    padding: 14px 22px;
+    background: #1e6b52;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 7px;
+}
+
+.btn:hover {
+    filter: brightness(1.08);
+}
+
+.small {
+    font-size: 14px;
+    color: #667;
+}
+
+.setup {
+    text-align: center;
+}
+
+.players {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
+.players button {
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 2px solid #b8cec5;
+    background: white;
+    cursor: pointer;
+}
+
+.players button.selected {
+    background: #d8eee5;
+    border-color: #1e6b52;
+    font-weight: bold;
+}
+
+#game {
+    display: none;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: white;
+    padding: 16px;
+    border-radius: 18px;
+    margin-bottom: 16px;
+}
+
+.stat {
+    font-weight: bold;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.space {
+    min-height: 105px;
+    border-radius: 16px;
+    padding: 12px;
+    background: #dcebe5;
+    border: 2px solid #c0d7ce;
+    position: relative;
+}
+
+.space:nth-child(3n) {
+    background: #e8e3f5;
+}
+
+.space:nth-child(4n) {
+    background: #f6e7c8;
+}
+
+.space.current {
+    outline: 4px solid #1e6b52;
+}
+
+.space b {
+    display: block;
+    margin-bottom: 7px;
+}
+
+.pawn {
+    font-size: 27px;
+}
+
+.controls {
+    text-align: center;
+    margin: 18px;
+}
+
+.question {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 850px;
+    margin: 18px auto;
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+.answers {
+    display: grid;
+    gap: 10px;
+}
+
+.answer {
+    border: 2px solid #d1dfda;
+    background: #f8fbfa;
+    border-radius: 12px;
+    padding: 13px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.answer:hover {
+    background: #eaf5f0;
+}
+
+.feedback {
+    font-weight: bold;
+    margin-top: 15px;
+    font-size: 17px;
+}
+
+.hide {
+    display: none;
+}
+
+.rules {
+    line-height: 1.6;
+}
+
+.rules li {
+    margin-bottom: 8px;
+}
+
+.progress {
+    height: 10px;
+    background: #dce8e3;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 12px 0 20px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #1e6b52;
+    width: 0%;
+    transition: width .4s;
+}
+
+.category {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #dcebe5;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+@media(max-width:700px) {
+    h1 {
+        font-size: 32px;
+    }
+
+    .board {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .screen {
+        padding: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- CAPA -->
+<section id="cover" class="screen active">
+    <div class="card cover">
+
+        <h1>MISSÃO: DEFESA DO ORGANISMO</h1>
+
+        <div class="subtitle">
+            Jogo de Microbiologia e Imunologia
+        </div>
+
+        <div class="info">
+            <div>
+                Aluna:
+                <b>Mannuela da Silva do Nascimento - 4208699</b>
+            </div>
+
+            <div>
+                Professor:
+                <b>Leonardo Braga</b>
+            </div>
+        </div>
+
+        <button class="btn" onclick="showRules()">
+            COMEÇAR
+        </button>
+
+    </div>
+</section>
+
+
+<!-- REGRAS -->
+<section id="rules" class="screen">
+
+    <div class="card rules">
+
+        <h1>📖 Como jogar</h1>
+
+        <p>
+            O objetivo é avançar pelo tabuleiro, responder aos desafios
+            e acumular Pontos de Defesa.
+        </p>
+
+        <ul>
+
+            <li>
+                👥 Participam de 2 a 6 jogadores.
+            </li>
+
+            <li>
+                ❤️ Cada jogador começa com 3 vidas.
+            </li>
+
+            <li>
+                🏆 Cada resposta correta vale 10 Pontos de Defesa.
+            </li>
+
+            <li>
+                ❌ Cada resposta incorreta faz o jogador perder 1 vida.
+            </li>
+
+            <li>
+                🎲 O jogador lança o dado e avança o número de casas sorteado.
+            </li>
+
+            <li>
+                🦠 As casas podem apresentar desafios de Microbiologia.
+            </li>
+
+            <li>
+                🧬 Algumas casas apresentam desafios de Imunologia.
+            </li>
+
+            <li>
+                🩺 Os casos clínicos exigem interpretação da situação apresentada.
+            </li>
+
+            <li>
+                ⚡ Casas de evento podem ajudar ou prejudicar o jogador.
+            </li>
+
+            <li>
+                👑 A última casa é o desafio final SUPERAGENTE.
+            </li>
+
+        </ul>
+
+        <div style="text-align:center">
+
+            <button class="btn" onclick="showSetup()">
+                CONTINUAR
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ESCOLHA DOS JOGADORES -->
+<section id="setup" class="screen">
+
+    <div class="card setup">
+
+        <h1>👥 Prepare sua missão</h1>
+
+        <p>
+            Escolha a quantidade de jogadores.
+        </p>
+
+        <div class="players">
+
+            <button onclick="selectPlayers(2,this)">
+                2 jogadores
+            </button>
+
+            <button onclick="selectPlayers(3,this)">
+                3 jogadores
+            </button>
+
+            <button onclick="selectPlayers(4,this)">
+                4 jogadores
+            </button>
+
+            <button onclick="selectPlayers(5,this)">
+                5 jogadores
+            </button>
+
+            <button onclick="selectPlayers(6,this)">
+                6 jogadores
+            </button>
+
+        </div>
+
+        <p id="playerMsg" class="small">
+            Selecione uma opção.
+        </p>
+
+        <button class="btn" onclick="startGame()">
+            INICIAR JOGO
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- JOGO -->
+<div id="game">
+
+    <div class="top">
+
+        <div class="stat">
+            🎯 Jogador:
+            <span id="turn">1</span>
+        </div>
+
+        <div class="stat">
+            🏆 PD:
+            <span id="score">0</span>
+        </div>
+
+        <div class="stat">
+            ❤️ Vidas:
+            <span id="lives">3</span>
+        </div>
+
+        <div class="stat">
+            📍 Casa:
+            <span id="pos">1</span>/16
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2 style="text-align:center">
+            🗺️ Tabuleiro
+        </h2>
+
+        <div class="progress">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div id="board" class="board"></div>
+
+        <div class="controls">
+
+            <button
+                class="btn"
+                id="roll"
+                onclick="rollDice()">
+                🎲 ROLAR DADO
+            </button>
+
+            <button
+                class="btn"
+                onclick="restart()">
+                ↻ RECOMEÇAR
+            </button>
+
+        </div>
+
+        <div
+            id="challenge"
+            class="question hide">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FINAL -->
+<section id="end" class="screen">
+
+    <div class="card cover">
+
+        <h1>
+            🏆 MISSÃO CONCLUÍDA!
+        </h1>
+
+        <p id="finalText"></p>
+
+        <button
+            class="btn"
+            onclick="restart()">
+            JOGAR NOVAMENTE
+        </button>
+
+    </div>
+
+</section>
+
+
+<script>
+
+let players = 2;
+
+let turn = 1;
+
+let score = 0;
+
+let lives = 3;
+
+let pos = 0;
+
+let locked = false;
+
+
+/* CASAS DO TABULEIRO */
+
+const spaces = [
+
+    "Barreiras",
+
+    "Laboratório",
+
+    "Microbiologia",
+
+    "Imunidade",
+
+    "Caso Clínico",
+
+    "Bactéria",
+
+    "Defesa",
+
+    "Laboratório",
+
+    "Microbiologia",
+
+    "Imunidade",
+
+    "Caso Clínico",
+
+    "Evento",
+
+    "Bactéria",
+
+    "Defesa",
+
+    "Caso Clínico",
+
+    "SUPERAGENTE"
+
+];
+
+
+/* BANCO DE QUESTÕES */
+
+const questions = [
+
+    {
+        category: "🦠 MICROBIOLOGIA",
+        q: "Qual estrutura está presente em bactérias Gram-negativas e está associada à endotoxina?",
+        a: [
+            "Peptidoglicano espesso",
+            "LPS",
+            "Quitina",
+            "Ergosterol"
+        ],
+        c: 1
+    },
+
+    {
+        category: "🧬 IMUNOLOGIA",
+        q: "Qual célula participa intensamente da resposta inflamatória aguda?",
+        a: [
+            "Neutrófilo",
+            "Hemácia",
+            "Plaqueta",
+            "Adipócito"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🦠 MICROBIOLOGIA",
+        q: "O teste da urease é classicamente associado a qual bactéria?",
+        a: [
+            "Helicobacter pylori",
+            "Staphylococcus aureus",
+            "Pseudomonas aeruginosa",
+            "Escherichia coli"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🧬 IMUNOLOGIA",
+        q: "Qual imunoglobulina predomina na resposta inicial a um antígeno?",
+        a: [
+            "IgA",
+            "IgE",
+            "IgM",
+            "IgG"
+        ],
+        c: 2
+    },
+
+    {
+        category: "🧬 IMUNOLOGIA",
+        q: "Qual célula é responsável pela produção de anticorpos após sua diferenciação?",
+        a: [
+            "Linfócito B / plasmócito",
+            "Neutrófilo",
+            "Macrófago",
+            "Linfócito NK"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🧬 IMUNOLOGIA",
+        q: "Qual linfócito é conhecido por destruir células infectadas?",
+        a: [
+            "CD8+",
+            "CD4+",
+            "Linfócito B",
+            "T regulador"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🧬 IMUNOLOGIA",
+        q: "O sistema complemento participa principalmente de:",
+        a: [
+            "Opsonização e lise",
+            "Digestão de lipídios",
+            "Produção de hemácias",
+            "Síntese de DNA"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🩺 CASO CLÍNICO",
+        q: "A infecção por H. pylori está fortemente relacionada a qual condição?",
+        a: [
+            "Gastrite e úlcera péptica",
+            "Cistite",
+            "Tétano",
+            "Dengue"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🔬 LABORATÓRIO",
+        q: "Qual meio de cultura é utilizado com frequência para cultura de urina?",
+        a: [
+            "CLED",
+            "Sabouraud",
+            "Lowenstein-Jensen",
+            "Ágar chocolate exclusivamente"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🦠 MICROBIOLOGIA",
+        q: "Bacillus e Clostridium podem formar:",
+        a: [
+            "Endósporos",
+            "Cápsulas virais",
+            "Hifas verdadeiras",
+            "Plasmócitos"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🦠 MICROBIOLOGIA",
+        q: "Qual característica diferencia as bactérias Gram-positivas das Gram-negativas?",
+        a: [
+            "Parede celular rica em peptidoglicano nas Gram-positivas",
+            "Presença de núcleo verdadeiro",
+            "Ausência total de parede celular",
+            "Presença obrigatória de cloroplastos"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🧬 IMUNOLOGIA",
+        q: "A imunidade inata caracteriza-se principalmente por:",
+        a: [
+            "Resposta rápida e inespecífica",
+            "Memória imunológica altamente específica",
+            "Produção exclusiva de anticorpos",
+            "Atuação somente após vacinação"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🧬 IMUNOLOGIA",
+        q: "Qual célula apresenta antígenos aos linfócitos T?",
+        a: [
+            "Célula apresentadora de antígeno",
+            "Hemácia",
+            "Plaqueta",
+            "Adipócito"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🩺 CASO CLÍNICO",
+        q: "Paciente apresenta ardência ao urinar e aumento da frequência urinária. Qual exame pode auxiliar na investigação?",
+        a: [
+            "Urocultura",
+            "Eletrocardiograma",
+            "Espirometria",
+            "Audiometria"
+        ],
+        c: 0
+    },
+
+    {
+        category: "🦠 MICROBIOLOGIA",
+        q: "Pseudomonas aeruginosa é conhecida por:",
+        a: [
+            "Ser um importante patógeno oportunista",
+            "Ser exclusivamente um vírus",
+            "Formar apenas fungos",
+            "Ser um protozoário"
+        ],
+        c: 0
+    }
+
+];
+
+
+/* NAVEGAÇÃO */
+
+function showRules() {
+
+    document
+        .getElementById("cover")
+        .classList.remove("active");
+
+    document
+        .getElementById("rules")
+        .classList.add("active");
+
+}
+
+
+function showSetup() {
+
+    document
+        .getElementById("rules")
+        .classList.remove("active");
+
+    document
+        .getElementById("setup")
+        .classList.add("active");
+
+}
+
+
+/* ESCOLHA DE JOGADORES */
+
+function selectPlayers(n, button) {
+
+    players = n;
+
+    document
+        .querySelectorAll(".players button")
+        .forEach(
+            x => x.classList.remove("selected")
+        );
+
+    button.classList.add("selected");
+
+    document
+        .getElementById("playerMsg")
+        .textContent =
+        n + " jogadores selecionados.";
+
+}
+
+
+/* INICIAR */
+
+function startGame() {
+
+    document
+        .getElementById("setup")
+        .classList.remove("active");
+
+    document
+        .getElementById("game")
+        .style.display = "block";
+
+    buildBoard();
+
+    update();
+
+}
+
+
+/* CONSTRUIR TABULEIRO */
+
+function buildBoard() {
+
+    const board =
+        document.getElementById("board");
+
+    board.innerHTML = "";
+
+    spaces.forEach(
+        (space, i) => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "space";
+
+            div.id = "sp" + i;
+
+            let icon = "🧬";
+
+            if (space === "SUPERAGENTE") {
+                icon = "👑";
+            }
+
+            if (space === "Microbiologia") {
+                icon = "🦠";
+            }
+
+            if (space === "Caso Clínico") {
+                icon = "🩺";
+            }
+
+            if (space === "Laboratório") {
+                icon = "🔬";
+            }
+
+            if (space === "Evento") {
+                icon = "⚡";
+            }
+
+            div.innerHTML =
+                "<b>" +
+                (i + 1) +
+                ". " +
+                space +
+                "</b>" +
+                "<span class='pawn'>" +
+                icon +
+                "</span>";
+
+            board.appendChild(div);
+
+        }
+    );
+
+}
+
+
+/* ATUALIZAR TELA */
+
+function update() {
+
+    document
+        .getElementById("turn")
+        .textContent = turn;
+
+    document
+        .getElementById("score")
+        .textContent = score;
+
+    document
+        .getElementById("lives")
+        .textContent = lives;
+
+    document
+        .getElementById("pos")
+        .textContent = pos + 1;
+
+    document
+        .querySelectorAll(".space")
+        .forEach(
+            x => x.classList.remove("current")
+        );
+
+    const current =
+        document.getElementById("sp" + pos);
+
+    if (current) {
+        current.classList.add("current");
+    }
+
+    const progress =
+        (pos / 15) * 100;
+
+    document
+        .getElementById("progressBar")
+        .style.width =
+        progress + "%";
+
+}
+
+
+/* DADO */
+
+function rollDice() {
+
+    if (locked) return;
+
+    locked = true;
+
+    const dice =
+        Math.floor(Math.random() * 6) + 1;
+
+    pos =
+        Math.min(
+            15,
+            pos + dice
+        );
+
+    update();
+
+    setTimeout(
+        () => challenge(),
+        400
+    );
+
+}
+
+
+/* DESAFIO */
+
+function challenge() {
+
+    const box =
+        document.getElementById("challenge");
+
+    box.classList.remove("hide");
+
+    let question;
+
+    /*
+    SUPERAGENTE:
+    seleciona questões integradas.
+    */
+
+    if (pos === 15) {
+
+        question = {
+            category: "👑 SUPERAGENTE",
+            q: "Paciente apresenta gastrite crônica e exame positivo para Helicobacter pylori. Qual alternativa relaciona corretamente o microrganismo e seu mecanismo de sobrevivência?",
+            a: [
+                "A bactéria produz urease, contribuindo para neutralizar a acidez local",
+                "A bactéria é um vírus sem metabolismo próprio",
+                "A bactéria sobrevive somente dentro das hemácias",
+                "A bactéria não possui mecanismos relacionados ao ambiente gástrico"
+            ],
+            c: 0
+        };
+
+    } else {
+
+        question =
+            questions[
+                Math.floor(
+                    Math.random() *
+                    questions.length
+                )
+            ];
+
+    }
+
+
+    box.innerHTML =
+
+        "<div class='category'>" +
+        question.category +
+        "</div>" +
+
+        "<h2>" +
+        spaces[pos] +
+        "</h2>" +
+
+        "<p>" +
+        "<b>" +
+        question.q +
+        "</b>" +
+        "</p>" +
+
+        "<div class='answers'>" +
+
+        question.a
+            .map(
+                (answer, i) =>
+                    "<button class='answer' onclick='answer(" +
+                    i +
+                    "," +
+                    question.c +
+                    ")'>" +
+
+                    String.fromCharCode(65 + i) +
+                    ") " +
+                    answer +
+
+                    "</button>"
+            )
+            .join("") +
+
+        "</div>" +
+
+        "<div id='fb' class='feedback'></div>";
+
+}
+
+
+/* RESPOSTA */
+
+function answer(index, correct) {
+
+    if (!locked) return;
+
+    const feedback =
+        document.getElementById("fb");
+
+
+    if (index === correct) {
+
+        score += 10;
+
+        feedback.textContent =
+            "✅ Correto! +10 Pontos de Defesa.";
+
+    } else {
+
+        lives--;
+
+        feedback.textContent =
+            "❌ Incorreto! Você perdeu 1 vida.";
+
+    }
+
+
+    update();
+
+
+    setTimeout(
+        () => nextTurn(),
+        1200
+    );
+
+}
+
+
+/* PRÓXIMO JOGADOR */
+
+function nextTurn() {
+
+    document
+        .getElementById("challenge")
+        .classList.add("hide");
+
+    locked = false;
+
+
+    if (
+        lives <= 0 ||
+        pos === 15
+    ) {
+
+        finish();
+
+        return;
+
+    }
+
+
+    turn =
+        turn % players + 1;
+
+    update();
+
+}
+
+
+/* FINAL */
+
+function finish() {
+
+    document
+        .getElementById("game")
+        .style.display = "none";
+
+    document
+        .getElementById("end")
+        .classList.add("active");
+
+
+    let message = "";
+
+
+    if (score >= 100) {
+
+        message =
+            "Excelente desempenho! Você demonstrou ótimo domínio dos conteúdos.";
+
+    } else if (score >= 60) {
+
+        message =
+            "Bom desempenho! Você conseguiu aplicar diversos conhecimentos durante a missão.";
+
+    } else {
+
+        message =
+            "Missão concluída! Use o jogo como oportunidade para revisar os conteúdos.";
+
+    }
+
+
+    document
+        .getElementById("finalText")
+        .innerHTML =
+
+        message +
+
+        "<br><br>" +
+
+        "🏆 <b>" +
+        score +
+        " Pontos de Defesa</b>" +
+
+        "<br>" +
+
+        "❤️ <b>" +
+        lives +
+        " vidas restantes</b>";
+
+}
+
+
+/* RECOMEÇAR */
+
+function restart() {
+
+    location.reload();
+
+}
+
+</script>
+
+</body>
+</html>
